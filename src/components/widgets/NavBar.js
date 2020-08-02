@@ -6,9 +6,12 @@ import {Menu as MenuIcon, ChevronLeft, MoreVert} from '@material-ui/icons';
 import {mainListItems, secondaryListItems} from "./DrawerLinks";
 import styles from "../styles/NavBarStyle";
 import {Link} from "react-router-dom";
-
+import SearchIcon from '@material-ui/icons/Search';
+import InputBase from '@material-ui/core/InputBase';
+import { useLocation } from 'react-router-dom'
 
 const NavBar = (props) => {
+  const {searchChange} = props;
   const {classes} = props;
   const [openDrawer, setOpenDrawer] = useState(false);
 
@@ -35,11 +38,8 @@ const NavBar = (props) => {
             })}>
             <MenuIcon/>
           </IconButton>
-
-          <SearchBar classes={classes}/>
-
-          <SideMenu/>
-
+          <SearchBar classes={classes} onChange={searchChange}/>
+          <SideMenu classes={classes}/>
         </Toolbar>
       </AppBar>
 
@@ -48,30 +48,34 @@ const NavBar = (props) => {
   );
 };
 
-
 const SearchBar = (props) => {
+  const {onChange} = props;
   const {classes} = props;
+  let location = useLocation();
 
-  return (
+  return ((location.pathname === "/patients")) ?
+  (
     <div className={classes.content}>
-      {/*<div className={classes.searchBar}>*/}
-      {/*  <div className={classes.searchIcon}>*/}
-      {/*    <Search />*/}
-      {/*  </div>*/}
-      {/*  <InputBase*/}
-      {/*    placeholder="Buscar…"*/}
-      {/*    classes={{*/}
-      {/*      root: classes.inputRoot,*/}
-      {/*      input: classes.inputInput,*/}
-      {/*    }}*/}
-      {/*    inputProps={{ 'aria-label': 'search' }}*/}
-      {/*  />*/}
-      {/*</div>*/}
+      <div className={classes.searchBar}>
+        <div className={classes.searchIcon}>
+          <SearchIcon />
+        </div>
+        <InputBase
+          placeholder="Buscar…"
+          classes={{
+            root: classes.inputRoot,
+            input: classes.inputInput,
+          }}
+          onChange={onChange}
+        />
+      </div>
     </div>
-  )
+  ) :
+    <div className={classes.content}/>;
 };
 
-const SideMenu = () => {
+const SideMenu = (props) => {
+  const {classes} = props;
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = (event) => {
@@ -83,12 +87,12 @@ const SideMenu = () => {
   };
 
   return (
-    <>
+    <div className={classes.contentRight}>
       <IconButton
         aria-haspopup="true"
         onClick={handleClick}
         color="inherit"
-        className="accountButton">
+        className="contentRight">
         <MoreVert/>
       </IconButton>
 
@@ -102,7 +106,7 @@ const SideMenu = () => {
         <MenuItem onClick={handleClick} component={Link} to="/user">Mi Usuario</MenuItem>
         <MenuItem onClick={handleClick} component={Link} to="/logout">Cerrar Sesión</MenuItem>
       </Menu>
-    </>
+    </div>
   )
 };
 

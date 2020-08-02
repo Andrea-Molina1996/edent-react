@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Paper} from "@material-ui/core";
-import {dateTimeFormat} from '../../utils/utils'
+import {dateTimeFormat} from '../../utils/utils';
 import axios from "axios";
 import "../styles/PagesStyle.css";
 import {CheckoutModal} from "../widgets/Modals";
@@ -28,7 +28,7 @@ const CheckoutList = () => {
         checkoutList && checkoutList.map((checkout, index) => {
           return (
             <CheckoutItem key={index} index={index} checkout={checkout} treatmentList={checkout.checkout}/>
-          )
+          );
         })
       }
     </div>
@@ -42,23 +42,26 @@ const CheckoutItem = (props) => {
 
   useEffect(() => {
     let total = 0;
-    treatmentList.map((treatment) => {
-      total += parseInt(treatment.price)
-    })
-    setTotal(total)
-  }, [])
+    treatmentList.forEach((treatment) => {
+      total += parseInt(treatment.price, 10);
+    });
+    setTotal(total);
+  }, [treatmentList]);
 
-  //
 
-  const payTreatments = () => {
-    axios.delete("https://219f9v9yfl.execute-api.us-east-1.amazonaws.com/api/checkout/" + checkout.uid)
+  const payTreatments = (payment_amount) => {
+
+    axios.put("https://219f9v9yfl.execute-api.us-east-1.amazonaws.com/api/checkout/" + checkout.uid,
+      {
+        'payment_amount': payment_amount
+      })
       .then((res) => {
         window.location.reload();
       })
       .catch((error) => {
       })
-    setIsOpen(false)
-  }
+    setIsOpen(false);
+  };
 
   return (
     <Paper className={"wide-paper"} style={{display: "flex", justifyContent: "space-between", flexWrap: "wrap"}}>
@@ -71,21 +74,23 @@ const CheckoutItem = (props) => {
           treatmentList && treatmentList.map((treatment, index) => {
             return (
               <li key={index} style={{textTransform: "capitalize"}}>{treatment.name + ": Q" + treatment.price}</li>
-            )
+            );
           })
         }
       </div>
 
-      <CheckoutModal isOpen={isOpen} closeModal={() => {
-        setIsOpen(false)
-      }} payTreatments={payTreatments}/>
+      <CheckoutModal isOpen={isOpen} closeModal={() => {setIsOpen(false);}}
+                     payTreatments={payTreatments} total={total} paidAmount={checkout.paid_amount}/>
       <div style={{width: "285px"}}>
         <h3>
           Total: Q{total}
         </h3>
+        <h3>
+          Pagado: Q{checkout.paid_amount}
+        </h3>
         <button className={"finish-treatment-button"} style={{width: "120px"}}
                 onClick={() => {
-                  setIsOpen(true)
+                  setIsOpen(true);
                 }}>Pagar
         </button>
         <br/>

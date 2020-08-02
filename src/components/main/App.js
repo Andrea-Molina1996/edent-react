@@ -10,7 +10,7 @@ const theme = createMuiTheme({
   },
 });
 
-const App = (props) => {
+const App = () => {
   return (
     <BrowserRouter>
       <MuiThemeProvider theme={theme}>
